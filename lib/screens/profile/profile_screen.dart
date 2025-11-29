@@ -252,16 +252,22 @@ class _ProfileHeader extends StatelessWidget {
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final userProvider = context.read<UserProvider>();
+    final authProvider = context.read<AuthProvider>();
+    
     final success = await userProvider.uploadAvatar(source);
 
     if (success && context.mounted) {
-      context.read<AuthProvider>().refreshProfile();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Profile picture updated'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      // Refresh auth provider to update the UI immediately
+      await authProvider.refreshProfile();
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture updated'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
     }
   }
 }
