@@ -72,7 +72,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppConstants.notificationsRoute);
+            },
           ),
         ],
       ),

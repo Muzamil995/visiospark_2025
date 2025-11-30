@@ -89,12 +89,24 @@ class RegistrationService {
     try {
       AppLogger.debug('Cancelling registration: $registrationId');
       
+      // Get registration details to cancel notification
+      final registration = await _client
+          .from('event_registrations')
+          .select('event_id')
+          .eq('id', registrationId)
+          .single();
+      
       await _client
           .from('event_registrations')
           .update({
             'status': 'cancelled',
           })
           .eq('id', registrationId);
+
+      // Cancel scheduled notification
+      if (registration['event_id'] != null) {
+        await _notificationService.cancelEventReminder(registration['event_id']);
+      }
 
       AppLogger.success('Registration cancelled');
     } catch (e) {

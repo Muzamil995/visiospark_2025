@@ -78,4 +78,5 @@ class AppConstants {
   static const String calendarRoute = '/calendar';
   static const String leaderboardRoute = '/leaderboard';
   static const String teamsRoute = '/teams';
+  static const String notificationsRoute = '/notifications';
 }

@@ -1,4 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import '../core/utils/logger.dart';
 
 class NotificationService {
@@ -15,6 +17,9 @@ class NotificationService {
     if (_initialized) return;
 
     try {
+      // Initialize timezone data
+      tz.initializeTimeZones();
+      
       const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
       const iosSettings = DarwinInitializationSettings(
         requestSoundPermission: true,
@@ -112,6 +117,7 @@ class NotificationService {
     required String body,
     required DateTime scheduledDate,
     String? payload,
+    int? id,
   }) async {
     try {
       const androidDetails = AndroidNotificationDetails(
@@ -133,17 +139,24 @@ class NotificationService {
         iOS: iosDetails,
       );
 
-      // Note: Scheduling requires timezone package
-      // For now, just show immediate notification
-      await _notificationsPlugin.show(
-        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      // Convert DateTime to TZDateTime
+      final tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+      
+      final notificationId = id ?? DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      await _notificationsPlugin.zonedSchedule(
+        notificationId,
         title,
         body,
+        tzScheduledDate,
         details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
         payload: payload,
       );
 
-      AppLogger.success('Notification scheduled: $title');
+      AppLogger.success('Notification scheduled for $scheduledDate: $title');
     } catch (e) {
       AppLogger.error('Error scheduling notification', e);
     }
@@ -167,8 +180,13 @@ class NotificationService {
     }
   }
 
+  // Generate notification ID from event ID
+  int _getNotificationIdForEvent(String eventId) {
+    return eventId.hashCode.abs() % 2147483647;
+  }
+
   // Notify about upcoming events (1 hour before)
-  Future<void> notifyUpcomingEvent({
+  Future<int?> notifyUpcomingEvent({
     required String eventId,
     required String eventTitle,
     required DateTime eventTime,
@@ -176,13 +194,23 @@ class NotificationService {
     final hourBefore = eventTime.subtract(const Duration(hours: 1));
     
     if (hourBefore.isAfter(DateTime.now())) {
+      final notificationId = _getNotificationIdForEvent(eventId);
       await scheduleNotification(
+        id: notificationId,
         title: 'Event Starting Soon! 🎉',
         body: '$eventTitle starts in 1 hour',
         scheduledDate: hourBefore,
         payload: 'event:$eventId',
       );
+      return notificationId;
     }
+    return null;
+  }
+
+  // Cancel event reminder notification
+  Future<void> cancelEventReminder(String eventId) async {
+    final notificationId = _getNotificationIdForEvent(eventId);
+    await cancelNotification(notificationId);
   }
 
   // Notify about new event

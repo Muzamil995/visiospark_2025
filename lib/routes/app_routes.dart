@@ -38,8 +38,10 @@ import '../screens/events/my_events_screen.dart';
 import '../screens/events/event_form_screen.dart';
 import '../screens/events/event_registrations_screen.dart';
 import '../screens/events/event_feedback_screen.dart';
+import '../screens/events/calendar_screen.dart';
 
 import '../screens/dashboard/analytics_screen.dart';
+import '../screens/notifications/notifications_screen.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> get routes {
@@ -66,9 +68,13 @@ class AppRoutes {
       // Event routes (simple ones without arguments)
       AppConstants.eventsRoute: (context) => const EventsListScreen(),
       AppConstants.myEventsRoute: (context) => const MyEventsScreen(),
+      AppConstants.calendarRoute: (context) => const CalendarScreen(),
       
       // Analytics route
       AppConstants.societyAnalyticsRoute: (context) => const AnalyticsScreen(),
+      
+      // Notifications route
+      AppConstants.notificationsRoute: (context) => const NotificationsScreen(),
     };
   }
 

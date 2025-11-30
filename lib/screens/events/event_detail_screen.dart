@@ -1501,9 +1501,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           _questions = questions;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Answer posted!')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Answer posted!')),
+          );
+        }
       }
     } catch (e) {
       AppLogger.error('Error posting answer', e);

@@ -59,6 +59,7 @@ dependencies:
   
   # Calendar & Sharing
   add_2_calendar: ^3.0.1
+  table_calendar: ^3.1.2
   share_plus: ^10.1.2
   
   # CSV Export
@@ -66,6 +67,7 @@ dependencies:
   
   # Notifications
   flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:

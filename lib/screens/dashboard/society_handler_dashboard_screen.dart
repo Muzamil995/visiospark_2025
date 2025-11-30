@@ -126,7 +126,9 @@ class _SocietyHandlerDashboardScreenState extends State<SocietyHandlerDashboardS
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppConstants.notificationsRoute);
+            },
           ),
         ],
       ),

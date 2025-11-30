@@ -148,13 +148,18 @@ class _EventFormScreenState extends State<EventFormScreen> {
       lastDate: maxDate,
     );
 
-    if (date != null && mounted) {
+    if (date != null) {
+      if (!mounted) return;
+      
       final time = await showTimePicker(
+        // ignore: use_build_context_synchronously
         context: context,
         initialTime: TimeOfDay.fromDateTime(_registrationDeadline ?? now),
       );
 
-      if (time != null && mounted) {
+      if (time != null) {
+        if (!mounted) return;
+        
         setState(() {
           _registrationDeadline = DateTime(
             date.year,
